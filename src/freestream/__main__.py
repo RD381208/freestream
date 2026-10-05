@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 """FreeStream â€” Movie, TV, and Anime CLI."""
 import os, sys, warnings
+# Windows UTF-8 enforcement -- must run before any output
+if sys.platform == "win32":
+    try:
+        os.system("chcp 65001 >nul 2>&1")
+    except Exception:
+        pass
+    for _s in ("stdout", "stderr", "stdin"):
+        try:
+            getattr(sys, _s).reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 os.environ["PYTHONWARNINGS"] = "ignore"
 warnings.filterwarnings("ignore"); warnings.simplefilter("ignore")
 import subprocess, shutil, time, socket, signal, atexit, tempfile
