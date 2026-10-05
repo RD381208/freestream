@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "freestream"
+version = "1.0.0"
+description = "Stream movies, TV shows, and anime from your terminal"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+keywords = ["streaming", "cli", "movies", "anime", "terminal", "mpv"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video",
+]
+dependencies = [
+    "rich>=13.0",
+    "InquirerPy>=0.3.4",
+    "requests>=2.31",
+    "urllib3>=2.0",
+    "patchright>=1.40",
+    "yt-dlp[curl-cffi]>=2024.0",
+    "static-ffmpeg>=2.0",
+    "prompt-toolkit>=3.0",
+    "opensubtitlescom>=0.1.5,<0.2",
+    "vidsrc-dlp>=0.1.0",
+]
+
+[project.scripts]
+freestream = "freestream.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/YOURUSER/freestream"
+Repository = "https://github.com/YOURUSER/freestream"
+"Bug Tracker" = "https://github.com/YOURUSER/freestream/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/freestream"]
