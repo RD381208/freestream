@@ -361,6 +361,35 @@ try:
     import static_ffmpeg; static_ffmpeg.add_paths()
 except Exception: pass
 
+
+# -- DNS-over-HTTPS override to bypass ISP-level TMDB blocks --------------
+# India ISPs (Jio/Airtel) block api.themoviedb.org at DNS level via court
+# order. We resolve TMDB hostnames via Cloudflare/Google DoH instead of
+# the OS resolver, so requests succeed even when the ISP refuses to answer.
+import socket as _fs_socket
+_fs_orig_getaddrinfo = _fs_socket.getaddrinfo
+
+def _fs_doh_getaddrinfo(host, port, *args, **kwargs):
+    if host in ("api.themoviedb.org", "api.tmdb.org"):
+        for _url, _params in (
+            ("https://cloudflare-dns.com/dns-query", {"name": host, "type": "A"}),
+            ("https://dns.google/resolve", {"name": host, "type": "A"}),
+        ):
+            try:
+                _r = requests.get(_url, params=_params,
+                                  headers={"accept": "application/dns-json"},
+                                  timeout=4)
+                _ips = [a["data"] for a in (_r.json().get("Answer") or [])
+                        if a.get("type") == 1]
+                if _ips:
+                    return [(_fs_socket.AF_INET, _fs_socket.SOCK_STREAM, 6,
+                             "", (_ips[0], port))]
+            except Exception:
+                continue
+    return _fs_orig_getaddrinfo(host, port, *args, **kwargs)
+
+_fs_socket.getaddrinfo = _fs_doh_getaddrinfo
+# ------------------------------------------------------------------------
 console = Console(color_system="truecolor", force_terminal=True)
 
 STYLE_PRIMARY   = "bold #00D2FF"
