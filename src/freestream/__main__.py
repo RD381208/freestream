@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FreeStream â€” Movie, TV, and Anime CLI."""
+"""FreeStream ??? Movie, TV, and Anime CLI."""
 import os, sys, warnings
 # Windows UTF-8 enforcement -- must run before any output
 if sys.platform == "win32":
@@ -15,22 +15,6 @@ if sys.platform == "win32":
 os.environ["PYTHONWARNINGS"] = "ignore"
 warnings.filterwarnings("ignore"); warnings.simplefilter("ignore")
 
-# Auto-relaunch in Windows Terminal when running in legacy console
-if (sys.platform == "win32"
-    and not os.environ.get("WT_SESSION")
-    and not os.environ.get("FREESTREAM_RELAUNCHED")
-    and not os.environ.get("FREESTREAM_NO_WT")):
-    try:
-        import shutil as _sh
-        import subprocess as _sp
-        _wt = _sh.which("wt.exe")
-        if _wt:
-            _env = dict(os.environ)
-            _env["FREESTREAM_RELAUNCHED"] = "1"
-            _sp.Popen([_wt, "cmd", "/c", "freestream"], env=_env)
-            sys.exit(0)
-    except Exception:
-        pass
 import subprocess, shutil, time, socket, signal, atexit, tempfile
 import threading, platform, re, json, base64, urllib3, webbrowser, random
 import concurrent.futures as cf
@@ -67,36 +51,34 @@ PROBE_CONCURRENCY = MOVIE_PROBE_CONCURRENCY
 
 # â•â• LOGO SIZES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 LOGO_LARGE = [
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ–ˆâ•—",
-    " â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•â•šâ•â•â–ˆâ–ˆâ•”â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘â–ˆâ–ˆâ•”â–ˆâ–ˆâ–ˆâ–ˆâ•”â–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â•  â•šâ•â•â•â•â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘â•šâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘ â•šâ•â• â–ˆâ–ˆâ•‘",
-    " â•šâ•â•     â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•â•šâ•â•â•â•â•â•â•â•šâ•â•â•â•â•â•â•   â•šâ•â•   â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•â•šâ•â•  â•šâ•â•â•šâ•â•     â•šâ•â•",
+    " #######  #######  #######  #######  #######  #######  #######  #######  #######  ####### ",
+    " ##       ##   ##  ##       ##       ##       ##       ##   ##  ##       ##   ##  ##   ## ",
+    " ######   ######   #####    #####    ######   ######   ######   #####    #######  ####### ",
+    " ##       ##   ##  ##       ##           ##  ##   ##  ##   ##  ##       ##   ##      ## ",
+    " ##       ##   ##  ##       ##           ##  ##   ##  ##   ##  ##       ##   ##      ## ",
+    " ##       ##   ##  #######  #######  #######  #######  ##   ##  #######  ##   ##      ## ",
 ]
 LOGO_MEDIUM = [
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ–ˆâ•—",
-    " â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•â•šâ•â•â–ˆâ–ˆâ•”â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘â–ˆâ–ˆâ•”â–ˆâ–ˆâ–ˆâ–ˆâ•”â–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  â•šâ•â•â•â•â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘â•šâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ•‘ â•šâ•â• â–ˆâ–ˆâ•‘",
-    " â•šâ•â•     â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•â•šâ•â•â•â•â•â•â•   â•šâ•â•   â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•â•šâ•â•  â•šâ•â•â•šâ•â•     â•šâ•â•",
+    " #######  #######  #######  #######  #######  #######  #######",
+    " ##       ##   ##  ##       ##       ##       ##   ##  ##     ",
+    " ######   ######   #####    #####    ######   ######   #####  ",
+    " ##       ##   ##  ##       ##           ##  ##   ##  ##     ",
+    " ##       ##   ##  ##       ##           ##  ##   ##  ##     ",
+    " ##       ##   ##  #######  #######  #######  #######  #######",
 ]
 LOGO_SMALL = [
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— ",
-    " â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•â•šâ•â•â–ˆâ–ˆâ•”â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—",
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  â•šâ•â•â•â•â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•‘",
-    " â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘",
-    " â•šâ•â•     â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•â•šâ•â•â•â•â•â•â•   â•šâ•â•   â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•â•šâ•â•  â•šâ•â•",
+    " #######  #######  #######  #######  ####### ",
+    " ##       ##   ##  ##       ##       ##   ## ",
+    " ######   ######   #####    ######   ###### ",
+    " ##       ##   ##  ##       ##       ##   ## ",
+    " ##       ##   ##  #######  #######  ##   ## ",
 ]
 LOGO_MINI = [
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—",
-    " â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•â–ˆâ–ˆâ•”â•â•â•â•â•â•šâ•â•â–ˆâ–ˆâ•”â•â•â•â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•â•â•",
-    " â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•”â•â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—  ",
-    " â–ˆâ–ˆâ•”â•â•â•  â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  â•šâ•â•â•â•â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â–ˆâ–ˆâ•”â•â•â•  ",
-    " â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘   â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—",
-    " â•šâ•â•     â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•â•šâ•â•â•â•â•â•â•   â•šâ•â•   â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•",
+    " ###  ###  ###  ###  ###",
+    " #    #    #    #    #  ",
+    " ##   ##   #    ##   ## ",
+    " #    #    #    #    #  ",
+    " #    ##   ###  ###  #  ",
 ]
 
 def select_logo(w):
@@ -274,7 +256,7 @@ def _venv_python():
     return VENV_DIR / ("Scripts/python.exe" if PLATFORM == "windows" else "bin/python")
 
 def _relaunch_in_venv():
-    print("FreeStream Setup"); print("  Â· Preparing environment...")
+    print("FreeStream Setup"); print("  ?- Preparing environment...")
     if not VENV_DIR.exists():
         try: subprocess.run([sys.executable,"-m","venv",str(VENV_DIR)],check=True)
         except subprocess.CalledProcessError:
@@ -282,7 +264,7 @@ def _relaunch_in_venv():
     vpy = _venv_python()
     chk = subprocess.run([str(vpy),"-c","import rich, urllib3"], capture_output=True)
     if chk.returncode != 0:
-        print("  Â· Installing bootstrap libs...")
+        print("  ?- Installing bootstrap libs...")
         subprocess.run([str(vpy),"-m","pip","install","--quiet","rich>=13.0","urllib3>=2.0"],check=True)
     env = dict(os.environ); env["PYTHONWARNINGS"] = "ignore"
     r = subprocess.run([str(vpy),str(SCRIPT_FILE)]+sys.argv[1:], env=env)
@@ -310,8 +292,8 @@ if not _deps_ready():
     from rich import box
     _console = Console(color_system="truecolor"); _console.clear()
     _console.print(Panel.fit(
-        "ðŸ¿ [bold #00D2FF]FreeStream Setup[/bold #00D2FF]\n"
-        f"[#64748B]Platform: {PLATFORM} Â· Installing...[/#64748B]",
+        "???? [bold #00D2FF]FreeStream Setup[/bold #00D2FF]\n"
+        f"[#64748B]Platform: {PLATFORM} ?- Installing...[/#64748B]",
         border_style="#3B82F6", box=box.ROUNDED))
     _console.print()
     with Progress(
@@ -846,7 +828,7 @@ def analyze_stream(url, hdrs):
     except Exception: pass
     return result
 
-# â•â• Probing â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? Probing ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 def _probe_stream_once(url, hdrs):
     if not url: return False, err_code(0, "empty")
     low = url.lower()
@@ -919,7 +901,7 @@ def _validate_stream(url, hdrs, attempts=2):
         if i < attempts - 1: time.sleep(0.1)
     return False, last
 
-# â•â• TMDB with multi-base fallback â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? TMDB with multi-base fallback ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 def robust_get(fu):
     try:
         r = requests.get(fu, headers={"User-Agent": UA_DESKTOP}, timeout=8, verify=False)
@@ -973,7 +955,7 @@ def format_tmdb_results(items, default_type="movie"):
         if not tid: continue
         badge = "MOVIE" if mt == "movie" else "TV"
         t = title[:title_w]
-        label = f"[{badge:<5}]  {t:<{title_w}}  ({year})  â˜… {rating:.1f}"
+        label = f"[{badge:<5}]  {t:<{title_w}}  ({year})  â˜... {rating:.1f}"
         out.append({"name": label, "value": {"id": tid, "imdb": None,
                     "type": mt, "title": title, "year": year, "rating": rating}})
     return out
@@ -1007,7 +989,7 @@ def fetch_category(ctype, sel):
     enrich_with_imdb(items)
     return items
 
-# â•â• Extraction â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? Extraction ???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 def _extract_via_ytdlp(embed_url, timeout=8):
     if not HAS_YTDLP: return None, None
     if _is_ytdlp_blocked(embed_url): return None, None
@@ -1341,7 +1323,7 @@ def _probe_pool(providers, kind, ids, season=1, episode=1, is_anime=False,
         except Exception: pass
     return None, errors, all_fails
 
-# â•â• OpenSubtitles â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? OpenSubtitles ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 _OS_CLIENT = None
 _OS_CLIENT_LOCK = threading.Lock()
 _OS_LAST_LOGIN = 0.0
@@ -1555,7 +1537,7 @@ def subtitle_flow(title, year, imdb_id=None, tmdb_id=None,
         console.print(f"[{STYLE_MUTED}]Subs: none found for {title} ({year})[/]")
         return None
 
-# â•â• Playback â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? Playback ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 def _mpv_sub_path(p):
     try: return str(Path(p).resolve()).replace("\\","/")
     except Exception: return str(p).replace("\\","/")
@@ -1656,7 +1638,7 @@ def open_stream_menu(stream_url, headers, title="", sub=None):
         time.sleep(1); return "back"
     return "back"
 
-# â•â• Download â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? Download ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 def _log_dl(tool, cmd, err_text):
     try:
         with open(DOWNLOAD_LOG, "a", encoding="utf-8") as f:
@@ -1903,7 +1885,7 @@ def download_stream(url, headers, fname):
     console.print(f"\n[{STYLE_SECONDARY}]ðŸ“¥ â†’ {full}[/]")
     return _download(clean, n, str(full))
 
-# â•â• Layout helpers â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? Layout helpers ???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 def _term_dims():
     try:
         from prompt_toolkit.application import get_app
@@ -1961,7 +1943,7 @@ def _force_initial_redraw(app):
             except Exception: break
     threading.Thread(target=_fire, daemon=True).start()
 
-# â•â• Panes â€” exact equal widths via Dimension.exact â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ?????? Panes ??? exact equal widths via Dimension.exact ????????????????????????????????????????????????????????????
 def _exact_dim(w):
     """Return an exact-width Dimension (correct API: classmethod, not kwarg)."""
     try:
@@ -1980,7 +1962,7 @@ def show_info_with_status(info_data, items_provider_func, title_text):
         visible = max(3, h-6)
         left_w, _ = _pane_widths(w); left_w = max(15, left_w)
         frags = []; entries = cache_state["statuses"]
-        if not entries: frags.append(("class:status-pending", "  Â· waitingâ€¦\n"))
+        if not entries: frags.append(("class:status-pending", "  Â- waitingâ€¦\n"))
         for name, err, ok in entries[-visible:]:
             line = f"  âœ“ {name}" if ok else f"  âœ— {name} [{err}]"
             if len(line) > left_w: line = line[:left_w-1] + "â€¦"
@@ -1997,7 +1979,7 @@ def show_info_with_status(info_data, items_provider_func, title_text):
         for line in _wrap_text(f"{info_data['title']} ({info_data['year']})", right_w):
             frags.append(("class:info-title", f" {line}\n"))
         frags.append(("class:info-value", "\n"))
-        fields = [("Rating", f"â˜… {info_data['rating']:.1f}/10"),
+        fields = [("Rating", f"â˜... {info_data['rating']:.1f}/10"),
                   ("Runtime", info_data.get("runtime","")),
                   ("Genres", info_data.get("genres","")),
                   ("Director", info_data.get("director","")),
@@ -2158,7 +2140,7 @@ def show_two_pane_list(items, title_text):
         for line in _wrap_text(f"{info['title']} ({info['year']})", right_w):
             frags.append(("class:info-title", f" {line}\n"))
         frags.append(("class:info-value", "\n"))
-        fields = [("Rating", f"â˜… {info['rating']:.1f}/10"),
+        fields = [("Rating", f"â˜... {info['rating']:.1f}/10"),
                   ("Runtime", info["runtime"]), ("Genres", info["genres"]),
                   ("Director", info["director"]),
                   ("IMDB", info.get("imdb","") or ""),
@@ -2179,7 +2161,7 @@ def show_two_pane_list(items, title_text):
         return frags
     def render_footer():
         h, w = _term_dims()
-        if w < 50: return [("class:footer", " â†‘â†“ Â· Enter Â· Esc Â· â†’ ops\n")]
+        if w < 50: return [("class:footer", " â†‘â†“ Â- Enter Â- Esc Â- â†’ ops\n")]
         if state["focus"] == "actions":
             a = state["action_idx"]
             hc = "class:action.selected" if a == 0 else "class:action"
@@ -2251,7 +2233,7 @@ def show_two_pane_list(items, title_text):
     return state["result"]
 
 def show_loading_screen(title_text, subtitle_text="booting upâ€¦"):
-    frames = ["â£¾","â£½","â£»","â¢¿","â¡¿","â£Ÿ","â£¯","â£·"]
+    frames = ["â£¾","â£½","â£»","â¢¿","â¡¿","â£Ÿ","â£¯","â£-"]
     state = {"frame": 0, "app": None}
     def render():
         h, w = _term_dims()
@@ -2315,7 +2297,7 @@ def print_banner():
     logo = select_logo(w)
     if logo is None:
         title = Text("F R E E S T R E A M", style="bold #00D2FF", justify="center")
-        sub = Text("Movies Â· TV Â· Anime", style=STYLE_MUTED, justify="center")
+        sub = Text("Movies Â- TV Â- Anime", style=STYLE_MUTED, justify="center")
         console.print(Panel(Group(title, sub), border_style=STYLE_SECONDARY, box=box.ROUNDED))
         console.print(); return
     logo_w = max(len(line) for line in logo)
@@ -2323,7 +2305,7 @@ def print_banner():
     for line in logo:
         console.print(f"[bold #00D2FF]{pad_str}{line}[/]")
     console.print()
-    sub = Text("Movies Â· TV Â· Anime", style=STYLE_MUTED, justify="center")
+    sub = Text("Movies Â- TV Â- Anime", style=STYLE_MUTED, justify="center")
     console.print(sub)
     console.print()
 
@@ -2390,7 +2372,7 @@ def handle_playback(item, season=1, episode=1):
                                       is_anime=is_anime, status_cb=status_cb)
         return (r, errs, fails)
     result = show_info_with_status(info_dict, worker,
-        f"Loading Â· {dtitle}" if not is_anime else f"Anime Â· {dtitle}")
+        f"Loading Â- {dtitle}" if not is_anime else f"Anime Â- {dtitle}")
     if not result or (isinstance(result, tuple) and len(result) == 2 and result[0] == "error"):
         console.print(f"[{STYLE_ERR}]âœ— No providers[/]"); time.sleep(1.5); return
     r, errs, fails = result
@@ -2402,8 +2384,8 @@ def handle_playback(item, season=1, episode=1):
 
     if not r:
         console.print(f"\n[{STYLE_ERR}]âœ— All servers failed[/]")
-        for e in fails[:8]: console.print(f"  [#64748B]Â· {e}[/]")
-        if len(fails) > 8: console.print(f"  [#64748B]Â· â€¦ and {len(fails)-8} more[/]")
+        for e in fails[:8]: console.print(f"  [#64748B]Â- {e}[/]")
+        if len(fails) > 8: console.print(f"  [#64748B]Â- â€¦ and {len(fails)-8} more[/]")
         choice = inquirer.select("Options:", choices=[
             {"name":"ðŸ”„ Try Another Server","value":"retry"},
             {"name":"ðŸ  Home","value":"home"}],
@@ -2569,7 +2551,7 @@ def search_flow():
     for it in items: it["is_anime"] = False
     with console.status("[cyan]Fetching IMDB IDsâ€¦[/cyan]", spinner="dots"):
         enrich_with_imdb(items)
-    result = show_two_pane_list(items, f"Search Â· {q}")
+    result = show_two_pane_list(items, f"Search Â- {q}")
     if result == "home": return
     if result == "exit": sys.exit(0)
     if result == "back": return
@@ -2600,7 +2582,7 @@ def browse_flow(ctype):
         if not items:
             console.print(f"[{STYLE_WARN}]No titles[/]"); time.sleep(1.5); continue
         for it in items: it["is_anime"] = (ctype == "anime")
-        result = show_two_pane_list(items, f"Trending Â· {gsel}")
+        result = show_two_pane_list(items, f"Trending Â- {gsel}")
         if result == "home": return
         if result == "exit": sys.exit(0)
         if result == "back": continue
