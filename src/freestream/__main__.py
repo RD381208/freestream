@@ -2576,7 +2576,7 @@ def main():
 
 def _check_for_updates():
     try:
-        r = requests.get('https://pypi.org/pypi/freestream/json', timeout=4)
+        r = requests.get('https://pypi.org/pypi/freestream-cli/json', timeout=4)
         if r.status_code != 200: return
         latest = (r.json().get('info') or {}).get('version')
         if not latest or latest == FREESTREAM_VERSION: return

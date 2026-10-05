@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "freestream"
+name = "freestream-cli"
 version = "1.0.0"
 description = "Stream movies, TV shows, and anime from your terminal"
 readme = "README.md"

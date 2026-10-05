@@ -3,9 +3,9 @@
 Stream movies, TV shows, and anime from your terminal.
 
 ## Install
-    pipx install freestream
-    uv tool install freestream
-    pip install --user freestream
+    pipx install freestream-cli
+    uv tool install freestream-cli
+    pip install --user freestream-cli
 
 ## Run
     freestream
