@@ -362,34 +362,6 @@ try:
 except Exception: pass
 
 
-# -- DNS-over-HTTPS override to bypass ISP-level TMDB blocks --------------
-# India ISPs (Jio/Airtel) block api.themoviedb.org at DNS level via court
-# order. We resolve TMDB hostnames via Cloudflare/Google DoH instead of
-# the OS resolver, so requests succeed even when the ISP refuses to answer.
-import socket as _fs_socket
-_fs_orig_getaddrinfo = _fs_socket.getaddrinfo
-
-def _fs_doh_getaddrinfo(host, port, *args, **kwargs):
-    if host in ("api.themoviedb.org", "api.tmdb.org"):
-        for _url, _params in (
-            ("https://cloudflare-dns.com/dns-query", {"name": host, "type": "A"}),
-            ("https://dns.google/resolve", {"name": host, "type": "A"}),
-        ):
-            try:
-                _r = requests.get(_url, params=_params,
-                                  headers={"accept": "application/dns-json"},
-                                  timeout=4)
-                _ips = [a["data"] for a in (_r.json().get("Answer") or [])
-                        if a.get("type") == 1]
-                if _ips:
-                    return [(_fs_socket.AF_INET, _fs_socket.SOCK_STREAM, 6,
-                             "", (_ips[0], port))]
-            except Exception:
-                continue
-    return _fs_orig_getaddrinfo(host, port, *args, **kwargs)
-
-_fs_socket.getaddrinfo = _fs_doh_getaddrinfo
-# ------------------------------------------------------------------------
 console = Console(color_system="truecolor", force_terminal=True)
 
 STYLE_PRIMARY   = "bold #00D2FF"
@@ -490,20 +462,41 @@ ANIME_GENRES = {"Trending Anime":"trending_anime","Top Rated Anime":"top_anime",
 # vidfast.pro emits m3u8 directly (browser catch).
 # peachify requires external AES-256-GCM decrypt; kept as last-resort.
 PROVIDERS = [
-    ("vidfast.pro",
-     lambda k,i,s,e: f"https://vidfast.pro/movie/{i}?sub=en" if k=="movie" else f"https://vidfast.pro/tv/{i}/{s}/{e}?sub=en",
+    ("autoembed",
+     lambda k,i,s,e: f"https://player.autoembed.cc/embed/movie/{i}" if k=="movie" else f"https://player.autoembed.cc/embed/tv/{i}/{s}/{e}",
+     lambda k,i,s,e: f"https://player.autoembed.cc/embed/movie/{i}" if k=="movie" else f"https://player.autoembed.cc/embed/tv/{i}/{s}/{e}"),
+    ("vidsrc.net",
+     lambda k,i,s,e: f"https://vidsrc.net/embed/movie/{i}" if k=="movie" else f"https://vidsrc.net/embed/tv/{i}/{s}/{e}",
+     lambda k,i,s,e: f"https://vidsrc.net/embed/movie/{i}" if k=="movie" else f"https://vidsrc.net/embed/tv/{i}/{s}/{e}"),
+    ("vidsrc.me",
+     lambda k,i,s,e: f"https://vidsrc.me/embed/movie?tmdb={i}" if k=="movie" else f"https://vidsrc.me/embed/tv?tmdb={i}&season={s}&episode={e}",
+     lambda k,i,s,e: f"https://vidsrc.me/embed/movie?imdb={i}" if k=="movie" else f"https://vidsrc.me/embed/tv?imdb={i}&season={s}&episode={e}"),
+    ("nontongo",
+     lambda k,i,s,e: f"https://www.nontongo.win/embed/movie/{i}" if k=="movie" else f"https://www.nontongo.win/embed/tv/{i}/{s}/{e}",
+     None),
+    ("multiembed",
+     lambda k,i,s,e: f"https://multiembed.mov/directstream.php?video_id={i}&tmdb=1" if k=="movie" else f"https://multiembed.mov/directstream.php?video_id={i}&tmdb=1&s={s}&e={e}",
+     lambda k,i,s,e: f"https://multiembed.mov/directstream.php?video_id={i}" if k=="movie" else f"https://multiembed.mov/directstream.php?video_id={i}&s={s}&e={e}"),
+    ("smashystream",
+     lambda k,i,s,e: f"https://embed.smashystream.com/playere.php?tmdb={i}" if k=="movie" else f"https://embed.smashystream.com/playere.php?tmdb={i}&season={s}&episode={e}",
+     lambda k,i,s,e: f"https://embed.smashystream.com/playere.php?imdb={i}" if k=="movie" else f"https://embed.smashystream.com/playere.php?imdb={i}&season={s}&episode={e}"),
+    ("embed.su",
+     lambda k,i,s,e: f"https://embed.su/embed/movie/{i}" if k=="movie" else f"https://embed.su/embed/tv/{i}/{s}/{e}",
      None),
     ("vidsrc.pm",
      lambda k,i,s,e: f"https://vidsrc.pm/embed/movie/{i}" if k=="movie" else f"https://vidsrc.pm/embed/tv/{i}/{s}/{e}",
      None),
-    ("vidsrc.net",
-     lambda k,i,s,e: f"https://vidsrc.net/embed/movie/{i}" if k=="movie" else f"https://vidsrc.net/embed/tv/{i}/{s}/{e}",
+    ("vidzee",
+     lambda k,i,s,e: f"https://vidzee.nu/embed/movie/{i}" if k=="movie" else f"https://vidzee.nu/embed/tv/{i}/{s}/{e}",
      None),
-    ("vidsrc.me",
-     lambda k,i,s,e: f"https://vidsrc.me/embed/movie?tmdb={i}" if k=="movie" else f"https://vidsrc.me/embed/tv?tmdb={i}&season={s}&episode={e}",
+    ("vidfast.pro",
+     lambda k,i,s,e: f"https://vidfast.pro/e/{i}" if k=="movie" else f"https://vidfast.pro/e/{i}?s={s}&e={e}",
      None),
+    ("vidlink.pro",
+     lambda k,i,s,e: f"https://vidlink.pro/movie/{i}" if k=="movie" else f"https://vidlink.pro/tv/{i}/{s}/{e}",
+     lambda k,i,s,e: f"https://vidlink.pro/movie/{i}" if k=="movie" else f"https://vidlink.pro/tv/{i}/{s}/{e}"),
     ("peachify",
-     lambda k,i,s,e: f"https://usa.eat-peach.sbs/net/movie/{i}" if k=="movie" else f"https://usa.eat-peach.sbs/net/tv/{i}/{s}/{e}",
+     lambda k,i,s,e: f"https://peachify.top/embed/movie/{i}" if k=="movie" else f"https://peachify.top/embed/tv/{i}/{s}/{e}",
      None),
 ]
 
@@ -513,70 +506,43 @@ ANIME_API_BASES = [
     "https://aniwatch-api.vercel.app",
     "https://api-consumet-org.onrender.com",
 ]
-ANIME_PROVIDERS = ["hianime", "animepahe"]
-
-def anime_search(query, provider="hianime"):
-    q_enc = quote(query.strip())
-    for base in ANIME_API_BASES:
-        try:
-            r = requests.get(f"{base}/anime/{provider}/{q_enc}", timeout=12, verify=False)
-            if r.status_code == 200:
-                data = r.json()
-                results = data.get("results") or []
-                if results: return results
-        except Exception: continue
-    return []
-
-def anime_info(anime_id, provider="hianime"):
-    for base in ANIME_API_BASES:
-        try:
-            r = requests.get(f"{base}/anime/{provider}/info",
-                             params={"id": anime_id}, timeout=12, verify=False)
-            if r.status_code == 200:
-                data = r.json()
-                if data and data.get("episodes"): return data
-        except Exception: continue
-    return None
-
-def anime_stream(episode_id, provider="hianime"):
-    for base in ANIME_API_BASES:
-        try:
-            r = requests.get(f"{base}/anime/{provider}/watch/{episode_id}",
-                             timeout=15, verify=False)
-            if r.status_code == 200:
-                data = r.json()
-                sources = data.get("sources") or []
-                if sources:
-                    best = None
-                    for s in sources:
-                        q = (s.get("quality") or "").lower()
-                        if "1080" in q: best = s; break
-                        if "720" in q and not best: best = s
-                        elif best is None: best = s
-                    if best:
-                        return best.get("url"), data.get("headers") or {}
-        except Exception: continue
-    return None, None
-
-def anime_provider_list(kind, tmdb_id, season=1, episode=1):
-    return [(p, ("anime", p)) for p in ANIME_PROVIDERS]
-
-BLOCKED_DOMAINS = [
-    "googlesyndication","doubleclick","adsbygoogle","googleadservices",
-    "googletagmanager","google-analytics","googletagservices",
-    "popads","popcash","propellerads","adsterra","hilltopads","clickadu",
-    "exoclick","juicyads","trafficjunky","trafficstars","popmyads",
-    "onclickads","adf.ly","shorte.st","ouo.io","linkvertise","adfoc.us",
-    "mgid.com","revcontent","taboola","outbrain","criteo","quantserve",
-    "scorecardresearch","krxd.net","rlcdn.com","rubiconproject","pubmatic",
-    "openx.net","indexexchange","sovrn","bidswitch","1rx.io","zonora",
-    "moonbit","popunder","popuptraffic","adcash",
-    "bet365","1xbet","betway","bwin","williamhill","pokerstars",
-    "draftkings","fanduel","betfair","unibet","betmgm","sportsbet",
-    "bovada","mybookie","casino","gambling","betting","poker",
-    "roulette","jackpot","lottery","slots","leovegas",
-    "facebook.net","hotjar","mixpanel","segment.io","amplitude",
-    "newrelic","sentry.io","bugsnag","coinhive","crypto-loot","coinpot",
+ANIME_PROVIDERS = [
+    ("autoembed",
+     lambda k,i,s,e: f"https://player.autoembed.cc/embed/movie/{i}" if k=="movie" else f"https://player.autoembed.cc/embed/tv/{i}/{s}/{e}",
+     lambda k,i,s,e: f"https://player.autoembed.cc/embed/movie/{i}" if k=="movie" else f"https://player.autoembed.cc/embed/tv/{i}/{s}/{e}"),
+    ("vidsrc.net",
+     lambda k,i,s,e: f"https://vidsrc.net/embed/movie/{i}" if k=="movie" else f"https://vidsrc.net/embed/tv/{i}/{s}/{e}",
+     lambda k,i,s,e: f"https://vidsrc.net/embed/movie/{i}" if k=="movie" else f"https://vidsrc.net/embed/tv/{i}/{s}/{e}"),
+    ("vidsrc.me",
+     lambda k,i,s,e: f"https://vidsrc.me/embed/movie?tmdb={i}" if k=="movie" else f"https://vidsrc.me/embed/tv?tmdb={i}&season={s}&episode={e}",
+     lambda k,i,s,e: f"https://vidsrc.me/embed/movie?imdb={i}" if k=="movie" else f"https://vidsrc.me/embed/tv?imdb={i}&season={s}&episode={e}"),
+    ("nontongo",
+     lambda k,i,s,e: f"https://www.nontongo.win/embed/movie/{i}" if k=="movie" else f"https://www.nontongo.win/embed/tv/{i}/{s}/{e}",
+     None),
+    ("multiembed",
+     lambda k,i,s,e: f"https://multiembed.mov/directstream.php?video_id={i}&tmdb=1" if k=="movie" else f"https://multiembed.mov/directstream.php?video_id={i}&tmdb=1&s={s}&e={e}",
+     lambda k,i,s,e: f"https://multiembed.mov/directstream.php?video_id={i}" if k=="movie" else f"https://multiembed.mov/directstream.php?video_id={i}&s={s}&e={e}"),
+    ("smashystream",
+     lambda k,i,s,e: f"https://embed.smashystream.com/playere.php?tmdb={i}" if k=="movie" else f"https://embed.smashystream.com/playere.php?tmdb={i}&season={s}&episode={e}",
+     lambda k,i,s,e: f"https://embed.smashystream.com/playere.php?imdb={i}" if k=="movie" else f"https://embed.smashystream.com/playere.php?imdb={i}&season={s}&episode={e}"),
+    ("embed.su",
+     lambda k,i,s,e: f"https://embed.su/embed/movie/{i}" if k=="movie" else f"https://embed.su/embed/tv/{i}/{s}/{e}",
+     None),
+    ("vidsrc.pm",
+     lambda k,i,s,e: f"https://vidsrc.pm/embed/movie/{i}" if k=="movie" else f"https://vidsrc.pm/embed/tv/{i}/{s}/{e}",
+     None),
+    ("vidzee",
+     lambda k,i,s,e: f"https://vidzee.nu/embed/movie/{i}" if k=="movie" else f"https://vidzee.nu/embed/tv/{i}/{s}/{e}",
+     None),
+    ("vidfast.pro",
+     lambda k,i,s,e: f"https://vidfast.pro/e/{i}" if k=="movie" else f"https://vidfast.pro/e/{i}?s={s}&e={e}",
+     None),
+    ("vidlink.pro",
+     lambda k,i,s,e: f"https://vidlink.pro/movie/{i}" if k=="movie" else f"https://vidlink.pro/tv/{i}/{s}/{e}",
+     lambda k,i,s,e: f"https://vidlink.pro/movie/{i}" if k=="movie" else f"https://vidlink.pro/tv/{i}/{s}/{e}"),
+    ("peachify",
+     lambda k,i,s,e: f"https://peachify.top/embed/movie/{i}" if k=="movie" else f"https://peachify.top/embed/tv/{i}/{s}/{e}",
+     None),
 ]
 
 YTDLP_BLOCKED_HOSTS = {
