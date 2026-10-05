@@ -49,7 +49,7 @@ MOVIE_PROBE_CONCURRENCY = 6
 ANIME_PROBE_CONCURRENCY = 6
 PROBE_CONCURRENCY = MOVIE_PROBE_CONCURRENCY
 
-# â•â• LOGO SIZES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  LOGO SIZES 
 LOGO_LARGE = [
     " #######  #######  #######  #######  #######  #######  #######  #######  #######  ####### ",
     " ##       ##   ##  ##       ##       ##       ##       ##   ##  ##       ##   ##  ##   ## ",
@@ -88,7 +88,7 @@ def select_logo(w):
     if w >= 55: return LOGO_MINI
     return None
 
-# â•â• ERROR CODES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  ERROR CODES 
 ERR_TYPES = {400:"BADREQ",401:"AUTH",403:"FORBIDDEN",404:"NOTFOUND",
              408:"TIMEOUT",410:"GONE",428:"PRECOND",429:"RATELIMIT",
              451:"BLOCKED",500:"SERVERERR",502:"BADGATEWAY",503:"UNAVAILABLE",
@@ -341,7 +341,7 @@ if not _deps_ready():
     subprocess.run([sys.executable,str(SCRIPT_FILE)]+sys.argv[1:], env=env)
     sys.exit(0)
 
-# â•â• APP IMPORTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  APP IMPORTS 
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.text import Text
@@ -439,7 +439,7 @@ CUSTOM_INQUIRER_STYLE = get_style(
 UA_DESKTOP = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
               "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
-# â•â• TMDB â€” with India-block-aware fallbacks â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  TMDB  with India-block-aware fallbacks 
 TMDB_KEYS = ["b6550aa3e86008da4d00b71b435e50de",
              "90b2cae8d7161e8ba0f3836240d7d352",
              "57240db50c2008e78c261e1a934627e4",
@@ -467,7 +467,7 @@ ANIME_GENRES = {"Trending Anime":"trending_anime","Top Rated Anime":"top_anime",
                 "Action & Shounen":10759,"Fantasy & Isekai":10765,
                 "Romance & Slice of Life":"romance_slice"}
 
-# â•â• MOVIE / TV PROVIDERS â€” vidsrc family + vidfast + peachify â•â•â•â•â•â•â•â•â•â•
+#  MOVIE / TV PROVIDERS  vidsrc family + vidfast + peachify 
 # vidsrc domains resolved via vidsrc-dlp (pure HTTP 4-hop chain).
 # vidfast.pro emits m3u8 directly (browser catch).
 # peachify requires external AES-256-GCM decrypt; kept as last-resort.
@@ -522,7 +522,7 @@ PROVIDERS = [
      None),
 ]
 
-# â•â• ANIME PROVIDERS â€” hianime + animepahe only â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  ANIME PROVIDERS  hianime + animepahe only 
 ANIKOTO_BASE = "https://anikotoapi.fampep.workers.dev"
 
 def _anikoto_search(query):
@@ -955,7 +955,7 @@ def format_tmdb_results(items, default_type="movie"):
         if not tid: continue
         badge = "MOVIE" if mt == "movie" else "TV"
         t = title[:title_w]
-        label = f"[{badge:<5}]  {t:<{title_w}}  ({year})  â˜... {rating:.1f}"
+        label = f"[{badge:<5}]  {t:<{title_w}}  ({year})  ... {rating:.1f}"
         out.append({"name": label, "value": {"id": tid, "imdb": None,
                     "type": mt, "title": title, "year": year, "rating": rating}})
     return out
@@ -1373,7 +1373,7 @@ def _os_lib_search(**kwargs):
                     "release": getattr(sub, "release", "unknown"),
                     "downloads": getattr(sub, "download_count", 0),
                     "raw": sub, "source": "lib"})
-    _os_log(f"lib search {kwargs} â†’ {len(out)}")
+    _os_log(f"lib search {kwargs}  {len(out)}")
     return out
 
 def _os_lib_download(item, target):
@@ -1509,7 +1509,7 @@ def subtitle_flow(title, year, imdb_id=None, tmdb_id=None,
     if not SETTINGS.get("opensubtitles_api_key"):
         console.print(f"[{STYLE_MUTED}]Subs: no OpenSubtitles API key[/]"); return None
     langs = SETTINGS["preferred_subtitle_languages"] or ["en"]
-    with console.status("[cyan]Fetching subtitlesâ€¦[/cyan]", spinner="dots"):
+    with console.status("[cyan]Fetching subtitles[/cyan]", spinner="dots"):
         for lang in langs:
             subs = fetch_subtitles(title, year, lang, imdb_id=imdb_id,
                                    tmdb_id=tmdb_id, season=season,
@@ -1519,10 +1519,10 @@ def subtitle_flow(title, year, imdb_id=None, tmdb_id=None,
             for cand in subs[:5]:
                 got = download_subtitle(cand, str(p))
                 if got:
-                    console.print(f"[{STYLE_SUCCESS}]âœ” Subtitles: {lang} "
+                    console.print(f"[{STYLE_SUCCESS}] Subtitles: {lang} "
                                   f"({Path(got).stat().st_size} bytes)[/]")
                     return got
-        console.print(f"[{STYLE_MUTED}]No {','.join(langs)} subs â€” trying all languagesâ€¦[/]")
+        console.print(f"[{STYLE_MUTED}]No {','.join(langs)} subs  trying all languages[/]")
         all_subs = fetch_subtitles(title, year, None, imdb_id=imdb_id,
                                    tmdb_id=tmdb_id, season=season,
                                    episode=episode, kind=kind)
@@ -1531,7 +1531,7 @@ def subtitle_flow(title, year, imdb_id=None, tmdb_id=None,
                 p = SCRIPT_DIR / f"sub_{pick.get('language', 'any')}.srt"
                 got = download_subtitle(pick, str(p))
                 if got:
-                    console.print(f"[{STYLE_SUCCESS}]âœ” Subtitles: {pick.get('language','?')} "
+                    console.print(f"[{STYLE_SUCCESS}] Subtitles: {pick.get('language','?')} "
                                   f"({Path(got).stat().st_size} bytes)[/]")
                     return got
         console.print(f"[{STYLE_MUTED}]Subs: none found for {title} ({year})[/]")
@@ -1610,19 +1610,19 @@ def _prompt_install_player():
                            style=CUSTOM_INQUIRER_STYLE).execute()
     if not pick: return
     ok, msg = _install_player(pick)
-    if ok: console.print(f"[{STYLE_SUCCESS}]âœ“ {pick} installed[/]")
-    else: console.print(f"[{STYLE_WARN}]âš  {pick}: {msg}[/]")
+    if ok: console.print(f"[{STYLE_SUCCESS}] {pick} installed[/]")
+    else: console.print(f"[{STYLE_WARN}] {pick}: {msg}[/]")
     time.sleep(1)
 
 def open_stream_menu(stream_url, headers, title="", sub=None):
     have_mpv = bool(shutil.which("mpv")); have_vlc = bool(_resolve_vlc_path())
     choices = []
-    if have_mpv: choices.append({"name":"â–¶  MPV (recommended)","value":"mpv"})
-    if have_vlc: choices.append({"name":"â–¶  VLC","value":"vlc"})
-    choices.append({"name":"ðŸ”— Copy link to clipboard","value":"copy"})
+    if have_mpv: choices.append({"name":"  MPV (recommended)","value":"mpv"})
+    if have_vlc: choices.append({"name":"  VLC","value":"vlc"})
+    choices.append({"name":" Copy link to clipboard","value":"copy"})
     if not have_mpv and not have_vlc:
-        choices.append({"name":"ðŸ“¥ Install a playerâ€¦","value":"install"})
-    choices.append({"name":"â† Back","value":"back"})
+        choices.append({"name":" Install a player","value":"install"})
+    choices.append({"name":" Back","value":"back"})
     pick = inquirer.select("Open with:", choices=choices,
                            style=CUSTOM_INQUIRER_STYLE).execute()
     if pick == "back": return "back"
@@ -1633,7 +1633,7 @@ def open_stream_menu(stream_url, headers, title="", sub=None):
         play_with_vlc(stream_url, headers, title=title, sub=sub); return "played"
     if pick == "copy":
         if copy_to_clipboard(stream_url):
-            console.print(f"[{STYLE_SUCCESS}]âœ“ Copied[/]")
+            console.print(f"[{STYLE_SUCCESS}] Copied[/]")
         else: console.print(f"[{STYLE_MUTED}]{stream_url}[/]")
         time.sleep(1); return "back"
     return "back"
@@ -1685,8 +1685,8 @@ def _cleanup_partial(out):
 def _ask_cancel_confirm(partial_path):
     try:
         pick = inquirer.select("Do you really want to stop the download?",
-            choices=[{"name":"ðŸ—‘  Yes â€” stop and delete the partial file","value":"stop"},
-                     {"name":"â–¶  No â€” resume download","value":"resume"}],
+            choices=[{"name":"  Yes  stop and delete the partial file","value":"stop"},
+                     {"name":"  No  resume download","value":"resume"}],
             style=CUSTOM_INQUIRER_STYLE).execute()
         return pick or "stop"
     except Exception: return "stop"
@@ -1701,7 +1701,7 @@ def _dl_ytdlp(url, hdrs, out):
         console=console, transient=False,
     )
     captured = []; last_update = {"t": 0.0}
-    t = prog.add_task("Preparingâ€¦", total=None, done="", extra="")
+    t = prog.add_task("Preparing", total=None, done="", extra="")
     with _RLive(Group(prog, footer), console=console, refresh_per_second=15, transient=False):
         def hook(d):
             now = time.time()
@@ -1723,7 +1723,7 @@ def _dl_ytdlp(url, hdrs, out):
                     except Exception: pass
                 prog.update(t, description="Downloading", done=done, extra="  ".join(parts))
             elif st == "finished":
-                prog.update(t, description="Finalizingâ€¦",
+                prog.update(t, description="Finalizing",
                             done=_fmt_bytes(d.get("total_bytes") or d.get("downloaded_bytes") or 0),
                             extra="merging")
         opts = {"outtmpl":out, "quiet":True, "no_warnings":True,
@@ -1737,16 +1737,16 @@ def _dl_ytdlp(url, hdrs, out):
             with _interruptible_download():
                 with silence_stdio():
                     with yt_dlp.YoutubeDL(opts) as ydl: ydl.download([url])
-            prog.update(t, description="âœ“ Complete", done="", extra="")
+            prog.update(t, description=" Complete", done="", extra="")
             return True, ""
         except KeyboardInterrupt:
             _log_dl("yt-dlp", ["yt-dlp", url], "(user cancelled)")
-            prog.update(t, description="âœ— Cancelled", done="", extra="")
+            prog.update(t, description=" Cancelled", done="", extra="")
             raise _DownloadCancelled()
         except Exception as e:
             err = "\n".join(captured) + "\n" + str(e)
             _log_dl("yt-dlp", ["yt-dlp", url], err)
-            prog.update(t, description=f"âœ— {err_code(0,str(e))}", done="", extra="")
+            prog.update(t, description=f" {err_code(0,str(e))}", done="", extra="")
             return False, err
 
 def _dl_ffmpeg(url, hdrs, out, is_hls, ffmpeg):
@@ -1771,7 +1771,7 @@ def _dl_ffmpeg(url, hdrs, out, is_hls, ffmpeg):
         console=console,
     )
     lines = []; p = None
-    t = prog.add_task("Downloadingâ€¦", total=None, info="starting", extra="")
+    t = prog.add_task("Downloading", total=None, info="starting", extra="")
     with _RLive(Group(prog, footer), console=console, refresh_per_second=15, transient=False):
         try:
             with _interruptible_download():
@@ -1811,20 +1811,20 @@ def _dl_ffmpeg(url, hdrs, out, is_hls, ffmpeg):
                     except Exception: pass
             if p is not None and p in _SPAWNED_PROCS: _SPAWNED_PROCS.remove(p)
             _log_dl("ffmpeg", cmd, "(user cancelled)")
-            prog.update(t, description="âœ— Cancelled", info="", extra="")
+            prog.update(t, description=" Cancelled", info="", extra="")
             raise _DownloadCancelled()
         except Exception as e:
             _log_dl("ffmpeg", cmd, str(e))
-            prog.update(t, description=f"âœ— {err_code(0,str(e))}", info="", extra="")
+            prog.update(t, description=f" {err_code(0,str(e))}", info="", extra="")
             return False, str(e)
         if p is not None and p in _SPAWNED_PROCS: _SPAWNED_PROCS.remove(p)
         full = "\n".join(lines)
         if p is not None and p.returncode == 0:
-            prog.update(t, description="âœ“ Complete", completed=dur or 1,
+            prog.update(t, description=" Complete", completed=dur or 1,
                         total=dur or 1, info="done", extra="")
             return True, ""
         _log_dl("ffmpeg", cmd, full)
-        prog.update(t, description=f"âœ— ffmpeg exit {p.returncode if p else '?'}",
+        prog.update(t, description=f" ffmpeg exit {p.returncode if p else '?'}",
                     info="see log", extra="")
         return False, full
 
@@ -1856,9 +1856,9 @@ def _download(url, hdrs, out):
                 _cleanup_partial(out)
                 console.print(f"[{STYLE_MUTED}]Download stopped, partial file deleted[/]")
                 return False
-            console.print(f"[{STYLE_PRIMARY}]Resuming downloadâ€¦[/]")
+            console.print(f"[{STYLE_PRIMARY}]Resuming download[/]")
             continue
-    console.print(f"\n[{STYLE_WARN}]âš  Download failed[/]")
+    console.print(f"\n[{STYLE_WARN}] Download failed[/]")
     console.print(f"[#64748B]Log: {DOWNLOAD_LOG}[/]")
     return False
 
@@ -1882,7 +1882,7 @@ def download_stream(url, headers, fname):
     try: outdir.mkdir(parents=True, exist_ok=True)
     except Exception: pass
     full = outdir / fname
-    console.print(f"\n[{STYLE_SECONDARY}]ðŸ“¥ â†’ {full}[/]")
+    console.print(f"\n[{STYLE_SECONDARY}]  {full}[/]")
     return _download(clean, n, str(full))
 
 # ?????? Layout helpers ???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
@@ -1962,10 +1962,10 @@ def show_info_with_status(info_data, items_provider_func, title_text):
         visible = max(3, h-6)
         left_w, _ = _pane_widths(w); left_w = max(15, left_w)
         frags = []; entries = cache_state["statuses"]
-        if not entries: frags.append(("class:status-pending", "  Â- waitingâ€¦\n"))
+        if not entries: frags.append(("class:status-pending", "  - waiting\n"))
         for name, err, ok in entries[-visible:]:
-            line = f"  âœ“ {name}" if ok else f"  âœ— {name} [{err}]"
-            if len(line) > left_w: line = line[:left_w-1] + "â€¦"
+            line = f"   {name}" if ok else f"   {name} [{err}]"
+            if len(line) > left_w: line = line[:left_w-1] + ""
             cls = "class:status-ok" if ok else "class:status-fail"
             frags.append((cls, line.ljust(left_w) + "\n"))
         used = min(len(entries), visible)
@@ -1979,7 +1979,7 @@ def show_info_with_status(info_data, items_provider_func, title_text):
         for line in _wrap_text(f"{info_data['title']} ({info_data['year']})", right_w):
             frags.append(("class:info-title", f" {line}\n"))
         frags.append(("class:info-value", "\n"))
-        fields = [("Rating", f"â˜... {info_data['rating']:.1f}/10"),
+        fields = [("Rating", f"... {info_data['rating']:.1f}/10"),
                   ("Runtime", info_data.get("runtime","")),
                   ("Genres", info_data.get("genres","")),
                   ("Director", info_data.get("director","")),
@@ -2002,7 +2002,7 @@ def show_info_with_status(info_data, items_provider_func, title_text):
     def render_footer():
         h, w = _term_dims()
         if w < 50: return [("class:footer", " Esc cancel\n")]
-        return [("class:footer", "  Loading providersâ€¦    Esc cancel\n")]
+        return [("class:footer", "  Loading providers    Esc cancel\n")]
     def make_body():
         h, w = _term_dims()
         if w < 80:
@@ -2011,15 +2011,15 @@ def show_info_with_status(info_data, items_provider_func, title_text):
         return VSplit([
             Window(FormattedTextControl(render_status_list),
                    width=_exact_dim(lw), wrap_lines=False),
-            Window(width=1, char="â”‚", style="class:border"),
+            Window(width=1, char="", style="class:border"),
             Window(FormattedTextControl(render_info),
                    width=_exact_dim(rw), wrap_lines=False),
         ])
     layout = Layout(HSplit([
         Window(FormattedTextControl(render_header), height=1),
-        Window(height=1, char="â”€", style="class:border"),
+        Window(height=1, char="", style="class:border"),
         DynamicContainer(make_body),
-        Window(height=1, char="â”€", style="class:border"),
+        Window(height=1, char="", style="class:border"),
         Window(FormattedTextControl(render_footer), height=1),
     ]))
     kb = KeyBindings()
@@ -2055,11 +2055,11 @@ def show_info_with_status(info_data, items_provider_func, title_text):
 def show_two_pane_list(items, title_text):
     cache = {}; pending = set()
     state = {"idx":0,"focus":"list","action_idx":0,"result":None,"app":None}
-    ACTIONS = [("ðŸ  Home","home"),("âŒ Exit","exit")]
+    ACTIONS = [(" Home","home"),(" Exit","exit")]
     def _placeholder(it):
         return {"title": it.get("title","?"), "year": it.get("year","N/A"),
                 "rating": it.get("rating",0.0), "runtime":"", "genres":"",
-                "director":"", "cast":[], "overview":"Loadingâ€¦",
+                "director":"", "cast":[], "overview":"Loading",
                 "imdb": it.get("imdb","")}
     def _do_fetch(it, key):
         try:
@@ -2125,7 +2125,7 @@ def show_two_pane_list(items, title_text):
             title = (it.get("title") or "?")[:max(4, left_w - 14)]
             year = it.get("year") or "?"
             label = f" [{badge}] {title} ({year})"
-            if len(label) > left_w: label = label[:left_w-1] + "â€¦"
+            if len(label) > left_w: label = label[:left_w-1] + ""
             cls = "class:list-item.selected" if i == idx else "class:list-item"
             frags.append((cls, label.ljust(left_w) + "\n"))
         used = end - start
@@ -2140,7 +2140,7 @@ def show_two_pane_list(items, title_text):
         for line in _wrap_text(f"{info['title']} ({info['year']})", right_w):
             frags.append(("class:info-title", f" {line}\n"))
         frags.append(("class:info-value", "\n"))
-        fields = [("Rating", f"â˜... {info['rating']:.1f}/10"),
+        fields = [("Rating", f"... {info['rating']:.1f}/10"),
                   ("Runtime", info["runtime"]), ("Genres", info["genres"]),
                   ("Director", info["director"]),
                   ("IMDB", info.get("imdb","") or ""),
@@ -2161,16 +2161,16 @@ def show_two_pane_list(items, title_text):
         return frags
     def render_footer():
         h, w = _term_dims()
-        if w < 50: return [("class:footer", " â†‘â†“ Â- Enter Â- Esc Â- â†’ ops\n")]
+        if w < 50: return [("class:footer", "  - Enter - Esc -  ops\n")]
         if state["focus"] == "actions":
             a = state["action_idx"]
             hc = "class:action.selected" if a == 0 else "class:action"
             ec = "class:action.selected" if a == 1 else "class:action"
             return [(hc,"  Home  "),("class:footer","  "),(ec,"  Exit  "),
-                    ("class:footer","      â† back   Enter activate   â†‘â†“ toggle\n")]
+                    ("class:footer","       back   Enter activate    toggle\n")]
         return [("class:action","  Home  "),("class:footer","  "),
                 ("class:action","  Exit  "),
-                ("class:footer","      â†‘â†“ navigate   â†’ ops   Enter select   Esc back\n")]
+                ("class:footer","       navigate    ops   Enter select   Esc back\n")]
     def make_body():
         h, w = _term_dims()
         if w < 80: return Window(FormattedTextControl(render_list), wrap_lines=False)
@@ -2178,15 +2178,15 @@ def show_two_pane_list(items, title_text):
         return VSplit([
             Window(FormattedTextControl(render_list),
                    width=_exact_dim(lw), wrap_lines=False),
-            Window(width=1, char="â”‚", style="class:border"),
+            Window(width=1, char="", style="class:border"),
             Window(FormattedTextControl(render_info),
                    width=_exact_dim(rw), wrap_lines=False),
         ])
     layout = Layout(HSplit([
         Window(FormattedTextControl(render_header), height=1),
-        Window(height=1, char="â”€", style="class:border"),
+        Window(height=1, char="", style="class:border"),
         DynamicContainer(make_body),
-        Window(height=1, char="â”€", style="class:border"),
+        Window(height=1, char="", style="class:border"),
         Window(FormattedTextControl(render_footer), height=1),
     ]))
     kb = KeyBindings()
@@ -2232,8 +2232,8 @@ def show_two_pane_list(items, title_text):
         except Exception: pass
     return state["result"]
 
-def show_loading_screen(title_text, subtitle_text="booting upâ€¦"):
-    frames = ["â£¾","â£½","â£»","â¢¿","â¡¿","â£Ÿ","â£¯","â£-"]
+def show_loading_screen(title_text, subtitle_text="booting up"):
+    frames = ["","","","","","","","-"]
     state = {"frame": 0, "app": None}
     def render():
         h, w = _term_dims()
@@ -2297,7 +2297,7 @@ def print_banner():
     logo = select_logo(w)
     if logo is None:
         title = Text("F R E E S T R E A M", style="bold #00D2FF", justify="center")
-        sub = Text("Movies Â- TV Â- Anime", style=STYLE_MUTED, justify="center")
+        sub = Text("Movies - TV - Anime", style=STYLE_MUTED, justify="center")
         console.print(Panel(Group(title, sub), border_style=STYLE_SECONDARY, box=box.ROUNDED))
         console.print(); return
     logo_w = max(len(line) for line in logo)
@@ -2305,7 +2305,7 @@ def print_banner():
     for line in logo:
         console.print(f"[bold #00D2FF]{pad_str}{line}[/]")
     console.print()
-    sub = Text("Movies Â- TV Â- Anime", style=STYLE_MUTED, justify="center")
+    sub = Text("Movies - TV - Anime", style=STYLE_MUTED, justify="center")
     console.print(sub)
     console.print()
 
@@ -2340,7 +2340,7 @@ def _print_stream_info(analysis):
     has_subs = analysis.get("has_subs", False)
     want_subs = SETTINGS.get("require_subs", False)
     if not want_subs or has_subs: return
-    console.print(f"[{STYLE_WARN}]Note: no soft subtitles in stream â€” this is all we found[/]")
+    console.print(f"[{STYLE_WARN}]Note: no soft subtitles in stream  this is all we found[/]")
 
 def _manual_server_pick(successes, dtitle):
     if not successes: return None
@@ -2349,7 +2349,7 @@ def _manual_server_pick(successes, dtitle):
         q = s.get("_quality","unknown")
         label = f"{s['name']}"
         choices.append({"name": label, "value": s})
-    choices.append({"name":"â† Back","value":None})
+    choices.append({"name":" Back","value":None})
     return inquirer.select(f"Pick server for {dtitle}:", choices=choices,
                            style=CUSTOM_INQUIRER_STYLE, max_height="70%").execute()
 
@@ -2372,9 +2372,9 @@ def handle_playback(item, season=1, episode=1):
                                       is_anime=is_anime, status_cb=status_cb)
         return (r, errs, fails)
     result = show_info_with_status(info_dict, worker,
-        f"Loading Â- {dtitle}" if not is_anime else f"Anime Â- {dtitle}")
+        f"Loading - {dtitle}" if not is_anime else f"Anime - {dtitle}")
     if not result or (isinstance(result, tuple) and len(result) == 2 and result[0] == "error"):
-        console.print(f"[{STYLE_ERR}]âœ— No providers[/]"); time.sleep(1.5); return
+        console.print(f"[{STYLE_ERR}] No providers[/]"); time.sleep(1.5); return
     r, errs, fails = result
 
     if r and isinstance(r, dict) and "_manual_list" in r:
@@ -2383,27 +2383,27 @@ def handle_playback(item, season=1, episode=1):
         r = pick
 
     if not r:
-        console.print(f"\n[{STYLE_ERR}]âœ— All servers failed[/]")
-        for e in fails[:8]: console.print(f"  [#64748B]Â- {e}[/]")
-        if len(fails) > 8: console.print(f"  [#64748B]Â- â€¦ and {len(fails)-8} more[/]")
+        console.print(f"\n[{STYLE_ERR}] All servers failed[/]")
+        for e in fails[:8]: console.print(f"  [#64748B]- {e}[/]")
+        if len(fails) > 8: console.print(f"  [#64748B]-  and {len(fails)-8} more[/]")
         choice = inquirer.select("Options:", choices=[
-            {"name":"ðŸ”„ Try Another Server","value":"retry"},
-            {"name":"ðŸ  Home","value":"home"}],
+            {"name":" Try Another Server","value":"retry"},
+            {"name":" Home","value":"home"}],
             style=CUSTOM_INQUIRER_STYLE).execute()
         if choice == "retry": return handle_playback(item, season, episode)
         return
 
     stream, headers = r["stream"], r["headers"]
-    console.print(f"\n[{STYLE_SUCCESS}]âœ“ Stream via {r['name']}[/]")
+    console.print(f"\n[{STYLE_SUCCESS}] Stream via {r['name']}[/]")
     analysis = analyze_stream(stream, headers); _print_stream_info(analysis)
     sub = subtitle_flow(title, year or "N/A", imdb_id=imdb, tmdb_id=tid,
                         season=(season if mt == "tv" else None),
                         episode=(episode if mt == "tv" else None), kind=mt)
     open_stream_menu(stream, headers, title=dtitle, sub=sub)
     cont = inquirer.select("Stream Options:", choices=[
-        {"name":"ðŸ“¥ Download Video","value":"dl"},
-        {"name":"ðŸ” Try Another Server","value":"retry"},
-        {"name":"ðŸ  Home","value":"home"}],
+        {"name":" Download Video","value":"dl"},
+        {"name":" Try Another Server","value":"retry"},
+        {"name":" Home","value":"home"}],
         style=CUSTOM_INQUIRER_STYLE).execute()
     if cont == "dl":
         sub_choice = None
@@ -2433,7 +2433,7 @@ def handle_playback(item, season=1, episode=1):
             base = Path(outdir) / Path(fname).with_suffix("")
             try:
                 shutil.copy(sub_choice, Path(f"{base}.srt"))
-                console.print(f"[{STYLE_SUCCESS}]âœ“ Subtitle saved next to video[/]")
+                console.print(f"[{STYLE_SUCCESS}] Subtitle saved next to video[/]")
             except Exception: pass
     elif cont == "retry":
         _force_manual_retry(item, season, episode)
@@ -2448,7 +2448,7 @@ def _force_manual_retry(item, season, episode):
         providers = list(PROVIDERS) + anime_provider_list(mt, tid, season, episode)
     else:
         providers = list(PROVIDERS)
-    console.print(f"\n[{STYLE_PRIMARY}]Probing servers for manual pickâ€¦[/]")
+    console.print(f"\n[{STYLE_PRIMARY}]Probing servers for manual pick[/]")
     successes = []
     ids = {"tmdb": tid, "imdb": imdb}
     def status_cb(name, err, ok): pass
@@ -2462,19 +2462,19 @@ def _force_manual_retry(item, season, episode):
     if r and isinstance(r, dict) and "_manual_list" in r:
         successes = r["_manual_list"]
     if not successes:
-        console.print(f"[{STYLE_ERR}]âœ— No servers available[/]"); time.sleep(1.5); return
+        console.print(f"[{STYLE_ERR}] No servers available[/]"); time.sleep(1.5); return
     pick = _manual_server_pick(successes, dtitle)
     if not pick: return
     stream, headers = pick["stream"], pick["headers"]
-    console.print(f"\n[{STYLE_SUCCESS}]âœ“ Stream via {pick['name']}[/]")
+    console.print(f"\n[{STYLE_SUCCESS}] Stream via {pick['name']}[/]")
     sub = subtitle_flow(item["title"], item.get("year") or "N/A", imdb_id=imdb, tmdb_id=tid,
                         season=(season if mt == "tv" else None),
                         episode=(episode if mt == "tv" else None), kind=mt)
     open_stream_menu(stream, headers, title=dtitle, sub=sub)
     cont = inquirer.select("Stream Options:", choices=[
-        {"name":"ðŸ“¥ Download Video","value":"dl"},
-        {"name":"ðŸ” Try Another Server","value":"retry"},
-        {"name":"ðŸ  Home","value":"home"}],
+        {"name":" Download Video","value":"dl"},
+        {"name":" Try Another Server","value":"retry"},
+        {"name":" Home","value":"home"}],
         style=CUSTOM_INQUIRER_STYLE).execute()
     if cont == "dl":
         download_stream(stream, headers,
@@ -2494,16 +2494,16 @@ def _season_episode_flow(item):
         if not seasons: return None
         sc = [{"name":f"Season {s['season_number']} ({s.get('episode_count',0)} eps)",
                "value":s["season_number"]} for s in seasons]
-        sc += [{"name":"ðŸ  Home","value":"__home__"},{"name":"â† Back","value":"__back__"}]
+        sc += [{"name":" Home","value":"__home__"},{"name":" Back","value":"__back__"}]
         ss = inquirer.select("Season:", choices=sc, style=CUSTOM_INQUIRER_STYLE,
                              max_height="50%").execute()
         if ss in ("__back__","__home__"): return None
         ed, _ = tmdb_request(f"tv/{tid}/season/{ss}")
         eps = ed.get("episodes",[]) if ed else []
         if not eps: continue
-        ec = [{"name":f"E{e['episode_number']:02d} â€” {e.get('name','Episode')}",
+        ec = [{"name":f"E{e['episode_number']:02d}  {e.get('name','Episode')}",
                "value":e["episode_number"]} for e in eps]
-        ec += [{"name":"ðŸ  Home","value":"__home__"},{"name":"â† Back","value":"__back__"}]
+        ec += [{"name":" Home","value":"__home__"},{"name":" Back","value":"__back__"}]
         se = inquirer.select("Episode:", choices=ec, style=CUSTOM_INQUIRER_STYLE,
                              max_height="50%").execute()
         if se == "__back__": continue
@@ -2549,9 +2549,9 @@ def search_flow():
         console.print(f"[{STYLE_WARN}]No results[/]"); time.sleep(1.5); return
     items = [r["value"] for r in raw]
     for it in items: it["is_anime"] = False
-    with console.status("[cyan]Fetching IMDB IDsâ€¦[/cyan]", spinner="dots"):
+    with console.status("[cyan]Fetching IMDB IDs[/cyan]", spinner="dots"):
         enrich_with_imdb(items)
-    result = show_two_pane_list(items, f"Search Â- {q}")
+    result = show_two_pane_list(items, f"Search - {q}")
     if result == "home": return
     if result == "exit": sys.exit(0)
     if result == "back": return
@@ -2573,7 +2573,7 @@ def browse_flow(ctype):
         elif ctype == "anime": genres = ANIME_GENRES
         else: return
         gcs = [{"name":n,"value":v} for n,v in genres.items()]
-        gcs += [{"name":"ðŸ  Home","value":"home"},{"name":"â† Back","value":"back"}]
+        gcs += [{"name":" Home","value":"home"},{"name":" Back","value":"back"}]
         gsel = inquirer.select("Category:", choices=gcs, style=CUSTOM_INQUIRER_STYLE,
                                max_height="60%").execute()
         if gsel in ("back","home"): return
@@ -2582,7 +2582,7 @@ def browse_flow(ctype):
         if not items:
             console.print(f"[{STYLE_WARN}]No titles[/]"); time.sleep(1.5); continue
         for it in items: it["is_anime"] = (ctype == "anime")
-        result = show_two_pane_list(items, f"Trending Â- {gsel}")
+        result = show_two_pane_list(items, f"Trending - {gsel}")
         if result == "home": return
         if result == "exit": sys.exit(0)
         if result == "back": continue
@@ -2599,25 +2599,25 @@ def browse_flow(ctype):
             return
 
 def _run_rerun_setup():
-    console.print("[#64748B]Re-running setupâ€¦[/]")
+    console.print("[#64748B]Re-running setup[/]")
     try:
         r = subprocess.run([sys.executable,"-m","pip","install","--quiet",
                             "--disable-pip-version-check","--upgrade",*PYTHON_PACKAGES],
                            timeout=900)
-        if r.returncode == 0: console.print(f"[{STYLE_SUCCESS}]âœ“ Python packages refreshed[/]")
-        else: console.print(f"[{STYLE_WARN}]âš  pip returned {r.returncode}[/]")
-    except Exception as e: console.print(f"[{STYLE_WARN}]âš  pip: {e}[/]")
+        if r.returncode == 0: console.print(f"[{STYLE_SUCCESS}] Python packages refreshed[/]")
+        else: console.print(f"[{STYLE_WARN}] pip returned {r.returncode}[/]")
+    except Exception as e: console.print(f"[{STYLE_WARN}] pip: {e}[/]")
     try:
         subprocess.run([sys.executable,"-m","playwright","install","chromium"],
                        timeout=600, capture_output=True)
-        console.print(f"[{STYLE_SUCCESS}]âœ“ Chromium refreshed[/]")
-    except Exception as e: console.print(f"[{STYLE_WARN}]âš  playwright: {e}[/]")
+        console.print(f"[{STYLE_SUCCESS}] Chromium refreshed[/]")
+    except Exception as e: console.print(f"[{STYLE_WARN}] playwright: {e}[/]")
     try:
         import static_ffmpeg; static_ffmpeg.add_paths()
-        console.print(f"[{STYLE_SUCCESS}]âœ“ ffmpeg checked[/]")
-    except Exception as e: console.print(f"[{STYLE_WARN}]âš  ffmpeg: {e}[/]")
+        console.print(f"[{STYLE_SUCCESS}] ffmpeg checked[/]")
+    except Exception as e: console.print(f"[{STYLE_WARN}] ffmpeg: {e}[/]")
     ok, msg = _mpv_launches_cleanly()
-    if ok: console.print(f"[{STYLE_SUCCESS}]âœ“ MPV clean[/]")
+    if ok: console.print(f"[{STYLE_SUCCESS}] MPV clean[/]")
     else: console.print(f"[{STYLE_WARN}]MPV: {msg}[/]")
     inquirer.text(message="[enter]").execute()
 
@@ -2627,15 +2627,15 @@ def settings_menu():
         req_subs = "on" if SETTINGS.get("require_subs",False) else "off"
         server_mode = SETTINGS.get("server_mode","auto")
         choice = inquirer.select("Settings:", choices=[
-            {"name":f"ðŸ’¬ Subtitle Mode: {SETTINGS['subtitle_mode']}","value":"subtitle_mode"},
-            {"name":f"ðŸŒ Subtitle Languages: {','.join(SETTINGS['preferred_subtitle_languages'])}",
+            {"name":f" Subtitle Mode: {SETTINGS['subtitle_mode']}","value":"subtitle_mode"},
+            {"name":f" Subtitle Languages: {','.join(SETTINGS['preferred_subtitle_languages'])}",
              "value":"subs_lang"},
-            {"name":f"ðŸ“ Require Soft Subs: {req_subs}","value":"req_subs"},
-            {"name":f"ðŸš« Block Ads: {'on' if SETTINGS['block_ads'] else 'off'}","value":"block_ads"},
-            {"name":f"ðŸ“¡ Server Selection: {server_mode}","value":"server_mode"},
-            {"name":"ðŸ”§ Rerun Setup (reinstall deps + refresh binaries)","value":"rerun_setup"},
-            {"name":"ðŸ›¡ï¸  Re-run Windows trust cleanup","value":"trust"},
-            {"name":"ðŸ  Home","value":"home"},{"name":"â† Back","value":"back"}],
+            {"name":f" Require Soft Subs: {req_subs}","value":"req_subs"},
+            {"name":f" Block Ads: {'on' if SETTINGS['block_ads'] else 'off'}","value":"block_ads"},
+            {"name":f" Server Selection: {server_mode}","value":"server_mode"},
+            {"name":" Rerun Setup (reinstall deps + refresh binaries)","value":"rerun_setup"},
+            {"name":"  Re-run Windows trust cleanup","value":"trust"},
+            {"name":" Home","value":"home"},{"name":" Back","value":"back"}],
             style=CUSTOM_INQUIRER_STYLE, max_height="60%").execute()
         if choice in ("back","home"): return
         if choice == "subtitle_mode":
@@ -2659,7 +2659,7 @@ def settings_menu():
                 console.print("[#64748B]Running trust cleanup...[/]")
                 _unblock_windows_binaries()
                 ok, msg = _mpv_launches_cleanly()
-                if ok: console.print(f"[{STYLE_SUCCESS}]âœ“ MPV clean[/]")
+                if ok: console.print(f"[{STYLE_SUCCESS}] MPV clean[/]")
                 else: console.print(f"[{STYLE_WARN}]MPV: {msg}[/]")
                 time.sleep(2)
             else: console.print("[#64748B]Not on Windows[/]"); time.sleep(1)
@@ -2679,12 +2679,12 @@ def main_menu():
     while True:
         print_banner()
         choice = inquirer.select("Main Menu:", choices=[
-            {"name":"ðŸ” Direct Search","value":"search"},
-            {"name":"ðŸŽ¬ Trending Movies","value":"movies"},
-            {"name":"ðŸ“º Trending TV Shows","value":"tv"},
-            {"name":"ðŸŒ¸ Trending Anime","value":"anime"},
-            {"name":"âš™ï¸  Settings","value":"settings"},
-            {"name":"âŒ Exit","value":"exit"}],
+            {"name":" Direct Search","value":"search"},
+            {"name":" Trending Movies","value":"movies"},
+            {"name":" Trending TV Shows","value":"tv"},
+            {"name":" Trending Anime","value":"anime"},
+            {"name":"  Settings","value":"settings"},
+            {"name":" Exit","value":"exit"}],
             style=CUSTOM_INQUIRER_STYLE).execute()
         if choice == "search": search_flow()
         elif choice == "movies": browse_flow("movie")
@@ -2696,7 +2696,7 @@ def main_menu():
 def main():
     enter_alt_screen()
     try:
-        show_loading_screen("FreeStream", "booting upâ€¦")
+        show_loading_screen("FreeStream", "booting up")
         main_menu()
     except KeyboardInterrupt: pass
     finally: exit_alt_screen()
