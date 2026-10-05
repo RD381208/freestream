@@ -14,6 +14,23 @@ if sys.platform == "win32":
             pass
 os.environ["PYTHONWARNINGS"] = "ignore"
 warnings.filterwarnings("ignore"); warnings.simplefilter("ignore")
+
+# Auto-relaunch in Windows Terminal when running in legacy console
+if (sys.platform == "win32"
+    and not os.environ.get("WT_SESSION")
+    and not os.environ.get("FREESTREAM_RELAUNCHED")
+    and not os.environ.get("FREESTREAM_NO_WT")):
+    try:
+        import shutil as _sh
+        import subprocess as _sp
+        _wt = _sh.which("wt.exe")
+        if _wt:
+            _env = dict(os.environ)
+            _env["FREESTREAM_RELAUNCHED"] = "1"
+            _sp.Popen([_wt, "cmd", "/c", "freestream"], env=_env)
+            sys.exit(0)
+    except Exception:
+        pass
 import subprocess, shutil, time, socket, signal, atexit, tempfile
 import threading, platform, re, json, base64, urllib3, webbrowser, random
 import concurrent.futures as cf
