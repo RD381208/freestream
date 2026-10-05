@@ -545,6 +545,25 @@ ANIME_PROVIDERS = [
      None),
 ]
 
+
+BLOCKED_DOMAINS = [
+    "googlesyndication","doubleclick","adsbygoogle","googleadservices",
+    "googletagmanager","google-analytics","googletagservices",
+    "popads","popcash","propellerads","adsterra","hilltopads","clickadu",
+    "exoclick","juicyads","trafficjunky","trafficstars","popmyads",
+    "onclickads","adf.ly","shorte.st","ouo.io","linkvertise","adfoc.us",
+    "mgid.com","revcontent","taboola","outbrain","criteo","quantserve",
+    "scorecardresearch","krxd.net","rlcdn.com","rubiconproject","pubmatic",
+    "openx.net","indexexchange","sovrn","bidswitch","1rx.io","zonora",
+    "moonbit","popunder","popuptraffic","adcash",
+    "bet365","1xbet","betway","bwin","williamhill","pokerstars",
+    "draftkings","fanduel","betfair","unibet","betmgm","sportsbet",
+    "bovada","mybookie","casino","gambling","betting","poker",
+    "roulette","jackpot","lottery","slots","leovegas",
+    "facebook.net","hotjar","mixpanel","segment.io","amplitude",
+    "newrelic","sentry.io","bugsnag","coinhive","crypto-loot","coinpot",
+]
+
 YTDLP_BLOCKED_HOSTS = {
     "vidsrc.mov","vidsrc.fyi","vidsrc.cc","vidsrc.pm","vidsrc.net",
     "vidsrc.xyz","vidsrc.in","vidsrc.to","vidsrc.me","vidsrc.rip",
@@ -557,7 +576,6 @@ YTDLP_BLOCKED_HOSTS = {
     "nontongo.win","moviesapi.to","smashystream","player.smashy.stream",
     "vidrift.com","player.vidzee.wtf","trendimovies.com","embedmaster.link",
 }
-
 DEMO_URL_PATTERNS = ("demo","placeholder","sample","test.mp4","bigbuckbunny")
 IMAGE_EXTS = ('.png','.jpg','.jpeg','.gif','.webp','.bmp','.svg')
 

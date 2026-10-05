@@ -1,2 +1,2 @@
 """FreeStream - Stream movies, TV shows, and anime from your terminal."""
-__version__ = "1.0.2"
+__version__ = "1.0.3"
